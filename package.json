@@ -1,0 +1,36 @@
+{
+  "name": "angular-passport",
+  "version": "1.0.0",
+  "description": "Angular module for PassportJS login and API auth. Strategies: Basic, JWT & Hash",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smikodanic/angular-passport.git"
+  },
+  "keywords": [
+    "angular",
+    "passportjs",
+    "npm",
+    "angular-passport",
+    "ngpassport"
+  ],
+  "author": "Saša Mikodanić",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/smikodanic/angular-passport/issues"
+  },
+  "homepage": "https://github.com/smikodanic/angular-passport#readme",
+  "dependencies": {
+    "browserify": "^13.1.0",
+    "gulp-compass": "^2.1.0",
+    "gulp-header": "^1.8.8",
+    "gulp-htmlmin": "^2.0.0",
+    "gulp-uglify": "^2.0.0",
+    "rimraf": "^2.5.4",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
+  }
+}
