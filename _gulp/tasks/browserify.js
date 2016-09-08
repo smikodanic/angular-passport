@@ -14,7 +14,7 @@ module.exports = function () {
         .bundle()
         .pipe(source('ngPassport.js'))
         .pipe(header(banner, {pkg: pkg}))
-        .pipe(gulp.dest('./dist/'))
+        .pipe(gulp.dest('./dist/js/'))
         .on('error', function (e) {
             console.log(e);
         });

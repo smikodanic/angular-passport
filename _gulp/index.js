@@ -2,7 +2,7 @@ var gulp = require('gulp');
 
 //GULP Tasks
 gulp.task('rimraf', require('./tasks/rimraf.js'));
-// gulp.task('browserify-uglify', require('./tasks/browserify-uglify.js'));
+gulp.task('browserify-uglify', require('./tasks/browserify-uglify.js'));
 gulp.task('browserify', require('./tasks/browserify.js'));
 gulp.task('htmlmin', require('./tasks/htmlmin.js'));
 
@@ -34,13 +34,13 @@ gulp.task('watch', function () {
         'src/**/*.js'
     ], ['browserify', 'browserify-uglify']);
 
-    // gulp.watch([
-    //     'src/**/*.html'
-    // ], ['htmlmin']);
+    gulp.watch([
+        'src/**/*.html'
+    ], ['htmlmin']);
 
-    // gulp.watch([
-    //     'src/**/*.scss'
-    // ], ['scss']);
+    gulp.watch([
+        'src/**/*.scss'
+    ], ['scss']);
 
 });
 
@@ -49,7 +49,7 @@ gulp.task('watch', function () {
 gulp.task('build-dist', ['rimraf'], function () {
     'use strict';
     setTimeout(function () {
-        gulp.start('browserify');
+        gulp.start('browserify', 'browserify-uglify', 'htmlmin', 'scss');
     }, 1300);
 });
 

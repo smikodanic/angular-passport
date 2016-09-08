@@ -2,7 +2,7 @@
   "name": "angular-passport",
   "version": "1.0.0",
   "description": "Angular module for PassportJS login and API auth. Strategies: Basic, JWT & Hash",
-  "main": "gulpfile.js",
+  "main": "dist/ngPassport.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -18,7 +18,7 @@
     "ngpassport"
   ],
   "author": "Saša Mikodanić",
-  "license": "MIT",
+  "license": "MIT (Freely you received, freely give. , Mt10:8)",
   "bugs": {
     "url": "https://github.com/smikodanic/angular-passport/issues"
   },
