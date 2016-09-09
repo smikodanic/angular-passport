@@ -9,7 +9,7 @@
  * Controller: 'NgPassportBasicCtrl'
  */
 
-module.exports = function ($scope, basicAuth, $state, APPCONF) {
+module.exports = function ($scope, basicAuth, $state) {
     'use strict';
     $scope.strategyName = 'Basic';
 
@@ -17,27 +17,27 @@ module.exports = function ($scope, basicAuth, $state, APPCONF) {
     // console.info('Current state \n', JSON.stringify($state.get($state.current.name), null, 2));
 
     /******** BASIC AUTHENTICATION ********/
-    //click on login button
-    $scope.basicLogin = function () {
+    //when login button is clicked
+    $scope.login = function () {
         $scope.errMsg = '';
 
         basicAuth
-            .login($scope.username, $scope.password, '/examples-spa/login/page1')
+            .login($scope.username, $scope.password)
             .catch(function (err) {
                 if (err.data) {
                     $scope.errMsg = err.data.message;
                     console.error(err.data.stack);
                 } else {
-                    $scope.errMsg = 'Bad API request: ' + APPCONF.API_BASE_URL + '/examples-spa/login/page1';
+                    $scope.errMsg = 'Bad API request: ' + NGPASSPORT_CONF.API_BASE_URL + NGPASSPORT_CONF.URL_AFTER_SUCCESSFUL_LOGIN;
                 }
 
             });
 
     };
 
-    //logout button
+    //when logout button is clicked
     $scope.logout = function () {
-        basicAuth.logout('/examples-spa/login/pageform');
+        basicAuth.logout();
     };
 };
 
@@ -134,7 +134,7 @@ module.exports = function () {
  * Notice: $cookies require 'ngCookies' module to be included
  */
 
-module.exports = function ($http, APPCONF, base64, $cookies, $location, $state, $timeout) {
+module.exports = function ($http, NGPASSPORT_CONF, base64, $cookies, $location, $state, $timeout) {
     'use strict';
 
     var basicAuth = {};
@@ -143,10 +143,9 @@ module.exports = function ($http, APPCONF, base64, $cookies, $location, $state, 
      * Check credentials (username, password) and set cookie if credentails are correct.
      * @param  {String} u - username
      * @param  {String} p -password
-     * @param  {String} redirectUrl -url after successful login
      * @return {Object}   - API object
      */
-    basicAuth.login = function (u, p, redirectUrl) {
+    basicAuth.login = function (u, p) {
 
         //encoding
         var input = u + ':' + p;
@@ -163,18 +162,32 @@ module.exports = function ($http, APPCONF, base64, $cookies, $location, $state, 
         //delete cookie (on bad login old cookie will be deleted)
         basicAuth.delCookie('authAPI');
 
-        return $http.get(APPCONF.API_BASE_URL + '/examples/auth/passport/basicstrategy', http_config)
+        return $http.get(NGPASSPORT_CONF.API_BASE_URL + NGPASSPORT_CONF.API_AUTH_PATHNAME, http_config)
             .then(function (respons) {
                 if (respons.data.isSuccess) {
                     basicAuth.setCookie('authAPI', respons.data.putLocally);
 
                     //redirect to another page
-                    if (redirectUrl) {
-                        $location.path(redirectUrl);
+                    if (NGPASSPORT_CONF.URL_AFTER_SUCCESSFUL_LOGIN) {
+                        $location.path(NGPASSPORT_CONF.URL_AFTER_SUCCESSFUL_LOGIN);
                     }
                 }
             });
 
+    };
+
+
+    /**
+     * Logout and redirect to another page.
+     * Use it in controller when user clicks on logout button.
+     * @return {Boolean} - returns true or false
+     */
+    basicAuth.logout = function () {
+        basicAuth.delCookie('authAPI');
+
+        $timeout(function () {
+            $location.path(NGPASSPORT_CONF.URL_AFTER_LOGOUT);
+        }, 34);
     };
 
 
@@ -186,6 +199,7 @@ module.exports = function ($http, APPCONF, base64, $cookies, $location, $state, 
     basicAuth.setCookie = function (cookieKey, obj) {
         $cookies.putObject(cookieKey, obj);
     };
+
 
     /**
      * Return object from cookie.
@@ -205,27 +219,13 @@ module.exports = function ($http, APPCONF, base64, $cookies, $location, $state, 
         }
     };
 
+
     /**
      * Delete cookie, usually on logout.
      * @param {String} cookieKey - 'authAPI'
      */
     basicAuth.delCookie = function (cookieKey) {
         $cookies.remove(cookieKey);
-    };
-
-
-    /**
-     * Logout and redirect to another page.
-     * Use it in controller when user clicks on logout button.
-     * @param  {String} redirectUrl -url after successful login
-     * @return {Boolean} - returns true or false
-     */
-    basicAuth.logout = function (redirectUrl) {
-        basicAuth.delCookie('authAPI');
-
-        $timeout(function () {
-            $location.path(redirectUrl);
-        }, 34);
     };
 
 
@@ -253,7 +253,6 @@ module.exports = function ($http, APPCONF, base64, $cookies, $location, $state, 
     };
 
 
-
     /**
      * Determine if app is authenticated or not. E.g. if user is logged in or not.
      * Authenticated is when cookie 'authAPI' exists.
@@ -266,7 +265,6 @@ module.exports = function ($http, APPCONF, base64, $cookies, $location, $state, 
             return false;
         }
     };
-
 
 
 
@@ -331,9 +329,11 @@ module.exports = function ($injector) {
 };
 
 },{}],5:[function(require,module,exports){
-/*global angular*/
+/*global angular, window*/
 
-
+/**
+ * angular.version: 1.5.0
+ */
 
 /***************************** BASIC AUTHETICATION ****************
  http://passportjs.org/docs/basic-digest
@@ -346,6 +346,22 @@ ngPassportBasic.factory('basicAuth', require('./factory/basicAuth'));
 ngPassportBasic.factory('base64', require('./factory/base64'));
 ngPassportBasic.factory('interceptApiRequest', require('./factory/interceptApiRequest'));
 
+
+/*when used in browserify (require('angular-passport')) */
 module.exports.ngPassportBasic = ngPassportBasic;
+
+
+/*when included in html file
+<script src=".../dist/js/ngPassport.js"></script>
+<script>
+    ngPassportBasic.constant('NGPASSPORT_CONF', {
+        API_BASE_URL: 'http://localhost:9005',
+        API_AUTH_PATHNAME: '/examples/auth/passport/basicstrategy',
+        URL_AFTER_SUCCESSFUL_LOGIN: '/examples-spa/login/page1',
+        URL_AFTER_LOGOUT: '/examples-spa/login/pageform'
+    });
+</script>
+*/
+window.ngPassportBasic = ngPassportBasic;
 
 },{"./controller/ngPassportBasicCtrl":1,"./factory/base64":2,"./factory/basicAuth":3,"./factory/interceptApiRequest":4}]},{},[5]);

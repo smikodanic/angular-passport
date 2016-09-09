@@ -2,7 +2,7 @@
  * Controller: 'NgPassportBasicCtrl'
  */
 
-module.exports = function ($scope, basicAuth, $state, APPCONF) {
+module.exports = function ($scope, basicAuth, $state) {
     'use strict';
     $scope.strategyName = 'Basic';
 
@@ -10,26 +10,26 @@ module.exports = function ($scope, basicAuth, $state, APPCONF) {
     // console.info('Current state \n', JSON.stringify($state.get($state.current.name), null, 2));
 
     /******** BASIC AUTHENTICATION ********/
-    //click on login button
-    $scope.basicLogin = function () {
+    //when login button is clicked
+    $scope.login = function () {
         $scope.errMsg = '';
 
         basicAuth
-            .login($scope.username, $scope.password, '/examples-spa/login/page1')
+            .login($scope.username, $scope.password)
             .catch(function (err) {
                 if (err.data) {
                     $scope.errMsg = err.data.message;
                     console.error(err.data.stack);
                 } else {
-                    $scope.errMsg = 'Bad API request: ' + APPCONF.API_BASE_URL + '/examples-spa/login/page1';
+                    $scope.errMsg = 'Bad API request: ' + NGPASSPORT_CONF.API_BASE_URL + NGPASSPORT_CONF.URL_AFTER_SUCCESSFUL_LOGIN;
                 }
 
             });
 
     };
 
-    //logout button
+    //when logout button is clicked
     $scope.logout = function () {
-        basicAuth.logout('/examples-spa/login/pageform');
+        basicAuth.logout();
     };
 };
