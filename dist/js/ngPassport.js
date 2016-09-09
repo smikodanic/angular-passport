@@ -42,6 +42,35 @@ module.exports = function ($scope, basicAuth, $state) {
 };
 
 },{}],2:[function(require,module,exports){
+module.exports = function (ctrl) {
+    'use strict';
+
+    return function ($templateCache) {
+
+        var ngpassportForm = {
+            restrict: 'E',
+            replace: true,
+            controller: ctrl,
+            scope: {templateurl: '='},
+            link: function (scope, elem, attr) {
+                console.log('template-url: ' + attr.templateUrl); //used <ngpassport-form template-url="formSimple.html"></ngpassport-form>
+            },
+            compile: function (element, attr) {
+                console.log('compile element: ' + JSON.stringify(element, null, 2));
+                console.log('compile attr: ' + JSON.stringify(attr, null, 2));
+            },
+            // template: '<div><form> username: <input type="text" ng-model="username"> <br>password: <input type="password" ng-model="password"> <button type="button" ng-click="login()">Login</button></form>{{errMsg}}</div>',
+            templateUrl: function (tElement, tAttrs) {
+                console.log(JSON.stringify(tAttrs, null, 2));
+                return tAttrs.templateUrl || 'formSimple.html';
+            }
+        };
+
+        return ngpassportForm;
+    };
+};
+
+},{}],3:[function(require,module,exports){
 module.exports = function () {
     'use strict';
 
@@ -127,7 +156,7 @@ module.exports = function () {
 
 };
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 /**
  * Services for Basic Authentication
  *
@@ -272,7 +301,7 @@ module.exports = function ($http, NGPASSPORT_CONF, base64, $cookies, $location, 
 
 };
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /**
  * API Request interceptor
  *
@@ -328,7 +357,7 @@ module.exports = function ($injector) {
 
 };
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /*global angular, window*/
 
 /**
@@ -346,6 +375,7 @@ ngPassportBasic.factory('basicAuth', require('./factory/basicAuth'));
 ngPassportBasic.factory('base64', require('./factory/base64'));
 ngPassportBasic.factory('interceptApiRequest', require('./factory/interceptApiRequest'));
 
+ngPassportBasic.directive('ngpassportForm', require('./directive/ngpassportForm')('NgPassportBasicCtrl'));
 
 /*when used in browserify (require('angular-passport')) */
 module.exports.ngPassportBasic = ngPassportBasic;
@@ -364,4 +394,4 @@ module.exports.ngPassportBasic = ngPassportBasic;
 */
 window.ngPassportBasic = ngPassportBasic;
 
-},{"./controller/ngPassportBasicCtrl":1,"./factory/base64":2,"./factory/basicAuth":3,"./factory/interceptApiRequest":4}]},{},[5]);
+},{"./controller/ngPassportBasicCtrl":1,"./directive/ngpassportForm":2,"./factory/base64":3,"./factory/basicAuth":4,"./factory/interceptApiRequest":5}]},{},[6]);

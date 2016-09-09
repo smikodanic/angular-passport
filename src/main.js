@@ -15,6 +15,7 @@ ngPassportBasic.factory('basicAuth', require('./factory/basicAuth'));
 ngPassportBasic.factory('base64', require('./factory/base64'));
 ngPassportBasic.factory('interceptApiRequest', require('./factory/interceptApiRequest'));
 
+ngPassportBasic.directive('ngpassportForm', require('./directive/ngpassportForm')('NgPassportBasicCtrl'));
 
 /*when used in browserify (require('angular-passport')) */
 module.exports.ngPassportBasic = ngPassportBasic;
