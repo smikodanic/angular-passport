@@ -53,7 +53,7 @@ module.exports = function (ctrl) {
             controller: ctrl,
             scope: {templateurl: '='},
             link: function (scope, elem, attr) {
-                console.log('template-url: ' + attr.templateUrl); //used <ngpassport-form template-url="formSimple.html"></ngpassport-form>
+                console.log('template-url: ' + attr.templateUrl);
             },
             compile: function (element, attr) {
                 console.log('compile element: ' + JSON.stringify(element, null, 2));
@@ -61,8 +61,8 @@ module.exports = function (ctrl) {
             },
             // template: '<div><form> username: <input type="text" ng-model="username"> <br>password: <input type="password" ng-model="password"> <button type="button" ng-click="login()">Login</button></form>{{errMsg}}</div>',
             templateUrl: function (tElement, tAttrs) {
-                console.log(JSON.stringify(tAttrs, null, 2));
-                return tAttrs.templateUrl || 'formSimple.html';
+                console.log('tAttrs' + JSON.stringify(tAttrs, null, 2));
+                return tAttrs.templateUrl || 'formSimple.html'; //used <ngpassport-form template-url="formSimple.html"></ngpassport-form>
             }
         };
 
@@ -360,14 +360,28 @@ module.exports = function ($injector) {
 },{}],6:[function(require,module,exports){
 /*global angular, window*/
 
-/**
- * angular.version: 1.5.0
- */
-
 /***************************** BASIC AUTHETICATION ****************
  http://passportjs.org/docs/basic-digest
  ******************************************************************/
 var ngPassportBasic = angular.module('ngPassport.basicStrategy', []);
+
+//protect API endpoints
+ngPassportBasic.config(function ($httpProvider) {
+    'use strict';
+    $httpProvider.interceptors.push('interceptApiRequest');
+});
+
+//protect pages e.g. ui-router's states
+ngPassportBasic.run(function ($rootScope, basicAuth) {
+    'use strict';
+    $rootScope.$on('$stateChangeSuccess', basicAuth.protectUIRouterState);
+});
+
+//define default form template 'formSimple.html'
+ngPassportBasic.run(function ($templateCache) {
+    'use strict';
+    $templateCache.put('formSimple.html', '<div><form> username: <input type="text" ng-model="username"> <br>password: <input type="password" ng-model="password"> <button type="button" ng-click="login()">Login</button></form>{{errMsg}}</div>');
+});
 
 ngPassportBasic.controller('NgPassportBasicCtrl', require('./controller/ngPassportBasicCtrl'));
 

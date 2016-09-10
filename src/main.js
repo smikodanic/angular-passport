@@ -1,13 +1,27 @@
 /*global angular, window*/
 
-/**
- * angular.version: 1.5.0
- */
-
 /***************************** BASIC AUTHETICATION ****************
  http://passportjs.org/docs/basic-digest
  ******************************************************************/
 var ngPassportBasic = angular.module('ngPassport.basicStrategy', []);
+
+//protect API endpoints
+ngPassportBasic.config(function ($httpProvider) {
+    'use strict';
+    $httpProvider.interceptors.push('interceptApiRequest');
+});
+
+//protect pages e.g. ui-router's states
+ngPassportBasic.run(function ($rootScope, basicAuth) {
+    'use strict';
+    $rootScope.$on('$stateChangeSuccess', basicAuth.protectUIRouterState);
+});
+
+//define default form template 'formSimple.html'
+ngPassportBasic.run(function ($templateCache) {
+    'use strict';
+    $templateCache.put('formSimple.html', '<div><form> username: <input type="text" ng-model="username"> <br>password: <input type="password" ng-model="password"> <button type="button" ng-click="login()">Login</button></form>{{errMsg}}</div>');
+});
 
 ngPassportBasic.controller('NgPassportBasicCtrl', require('./controller/ngPassportBasicCtrl'));
 
