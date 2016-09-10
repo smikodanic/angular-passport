@@ -3,16 +3,16 @@ module.exports = function (ctrl) {
 
     return function () {
 
-        var ngpassportForm = {
-            restrict: 'E',
+        var ngpassportLogout = {
+            restrict: 'EC',
             replace: true,
             controller: ctrl,
             scope: {templateUrl: '='},
             templateUrl: function (tElement, tAttrs) {
-                return tAttrs.templateUrl || 'formSimple.html'; //used <ngpassport-form template-url="formSimple.html"></ngpassport-form>
+                return tAttrs.templateUrl || 'logoutSimple.html'; //used <ngpassport-form template-url="formSimple.html"></ngpassport-form>
             }
         };
 
-        return ngpassportForm;
+        return ngpassportLogout;
     };
 };

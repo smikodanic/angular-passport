@@ -17,10 +17,11 @@ ngPassportBasic.run(function ($rootScope, basicAuth) {
     $rootScope.$on('$stateChangeSuccess', basicAuth.protectUIRouterState);
 });
 
-//define default form template 'formSimple.html'
+//define default templates
 ngPassportBasic.run(function ($templateCache) {
     'use strict';
     $templateCache.put('formSimple.html', '<div><form> username: <input type="text" ng-model="username"> <br>password: <input type="password" ng-model="password"> <button type="button" ng-click="login()">Login</button></form>{{errMsg}}</div>');
+    $templateCache.put('logoutSimple.html', '<button ng-click="logout()">Logout</button>');
 });
 
 ngPassportBasic.controller('NgPassportBasicCtrl', require('./controller/ngPassportBasicCtrl'));
@@ -30,6 +31,7 @@ ngPassportBasic.factory('base64', require('./factory/base64'));
 ngPassportBasic.factory('interceptApiRequest', require('./factory/interceptApiRequest'));
 
 ngPassportBasic.directive('ngpassportForm', require('./directive/ngpassportForm')('NgPassportBasicCtrl'));
+ngPassportBasic.directive('ngpassportLogout', require('./directive/ngpassportLogout')('NgPassportBasicCtrl'));
 
 /*when used in browserify (require('angular-passport')) */
 module.exports.ngPassportBasic = ngPassportBasic;

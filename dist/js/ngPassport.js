@@ -1,6 +1,6 @@
 /*!
  *  v1.0.0 (https://github.com/smikodanic/angular-passport#readme)
- * Copyright 2014-2016 Saša Mikodanić
+ * Copyright 2014-2016 Sasa Mikodanic
  * Licensed under MIT (Freely you received, freely give. , Mt10:8) 
  */
 
@@ -45,23 +45,14 @@ module.exports = function ($scope, basicAuth, $state) {
 module.exports = function (ctrl) {
     'use strict';
 
-    return function ($templateCache) {
+    return function () {
 
         var ngpassportForm = {
             restrict: 'E',
             replace: true,
             controller: ctrl,
-            scope: {templateurl: '='},
-            link: function (scope, elem, attr) {
-                console.log('template-url: ' + attr.templateUrl);
-            },
-            compile: function (element, attr) {
-                console.log('compile element: ' + JSON.stringify(element, null, 2));
-                console.log('compile attr: ' + JSON.stringify(attr, null, 2));
-            },
-            // template: '<div><form> username: <input type="text" ng-model="username"> <br>password: <input type="password" ng-model="password"> <button type="button" ng-click="login()">Login</button></form>{{errMsg}}</div>',
+            scope: {templateUrl: '='},
             templateUrl: function (tElement, tAttrs) {
-                console.log('tAttrs' + JSON.stringify(tAttrs, null, 2));
                 return tAttrs.templateUrl || 'formSimple.html'; //used <ngpassport-form template-url="formSimple.html"></ngpassport-form>
             }
         };
@@ -71,6 +62,26 @@ module.exports = function (ctrl) {
 };
 
 },{}],3:[function(require,module,exports){
+module.exports = function (ctrl) {
+    'use strict';
+
+    return function () {
+
+        var ngpassportLogout = {
+            restrict: 'EC',
+            replace: true,
+            controller: ctrl,
+            scope: {templateUrl: '='},
+            templateUrl: function (tElement, tAttrs) {
+                return tAttrs.templateUrl || 'logoutSimple.html'; //used <ngpassport-form template-url="formSimple.html"></ngpassport-form>
+            }
+        };
+
+        return ngpassportLogout;
+    };
+};
+
+},{}],4:[function(require,module,exports){
 module.exports = function () {
     'use strict';
 
@@ -156,7 +167,7 @@ module.exports = function () {
 
 };
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /**
  * Services for Basic Authentication
  *
@@ -301,7 +312,7 @@ module.exports = function ($http, NGPASSPORT_CONF, base64, $cookies, $location, 
 
 };
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /**
  * API Request interceptor
  *
@@ -357,7 +368,7 @@ module.exports = function ($injector) {
 
 };
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /*global angular, window*/
 
 /***************************** BASIC AUTHETICATION ****************
@@ -377,10 +388,11 @@ ngPassportBasic.run(function ($rootScope, basicAuth) {
     $rootScope.$on('$stateChangeSuccess', basicAuth.protectUIRouterState);
 });
 
-//define default form template 'formSimple.html'
+//define default templates
 ngPassportBasic.run(function ($templateCache) {
     'use strict';
     $templateCache.put('formSimple.html', '<div><form> username: <input type="text" ng-model="username"> <br>password: <input type="password" ng-model="password"> <button type="button" ng-click="login()">Login</button></form>{{errMsg}}</div>');
+    $templateCache.put('logoutSimple.html', '<button ng-click="logout()">Logout</button>');
 });
 
 ngPassportBasic.controller('NgPassportBasicCtrl', require('./controller/ngPassportBasicCtrl'));
@@ -390,6 +402,7 @@ ngPassportBasic.factory('base64', require('./factory/base64'));
 ngPassportBasic.factory('interceptApiRequest', require('./factory/interceptApiRequest'));
 
 ngPassportBasic.directive('ngpassportForm', require('./directive/ngpassportForm')('NgPassportBasicCtrl'));
+ngPassportBasic.directive('ngpassportLogout', require('./directive/ngpassportLogout')('NgPassportBasicCtrl'));
 
 /*when used in browserify (require('angular-passport')) */
 module.exports.ngPassportBasic = ngPassportBasic;
@@ -408,4 +421,4 @@ module.exports.ngPassportBasic = ngPassportBasic;
 */
 window.ngPassportBasic = ngPassportBasic;
 
-},{"./controller/ngPassportBasicCtrl":1,"./directive/ngpassportForm":2,"./factory/base64":3,"./factory/basicAuth":4,"./factory/interceptApiRequest":5}]},{},[6]);
+},{"./controller/ngPassportBasicCtrl":1,"./directive/ngpassportForm":2,"./directive/ngpassportLogout":3,"./factory/base64":4,"./factory/basicAuth":5,"./factory/interceptApiRequest":6}]},{},[7]);
