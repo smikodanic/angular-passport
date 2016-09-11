@@ -369,6 +369,11 @@ module.exports = function ($injector) {
 };
 
 },{}],7:[function(require,module,exports){
+module.exports.ngPassportBasic = require('./ngPassportBasic');
+
+
+
+},{"./ngPassportBasic":8}],8:[function(require,module,exports){
 /*global angular, window*/
 
 /***************************** BASIC AUTHETICATION ****************
@@ -404,8 +409,14 @@ ngPassportBasic.factory('interceptApiRequest', require('./factory/interceptApiRe
 ngPassportBasic.directive('ngpassportForm', require('./directive/ngpassportForm')('NgPassportBasicCtrl'));
 ngPassportBasic.directive('ngpassportLogout', require('./directive/ngpassportLogout')('NgPassportBasicCtrl'));
 
+
+
+
 /*when used in browserify (require('angular-passport')) */
-module.exports.ngPassportBasic = ngPassportBasic;
+module.exports = ngPassportBasic;
+
+
+
 
 
 /*when included in html file
@@ -415,7 +426,7 @@ module.exports.ngPassportBasic = ngPassportBasic;
         API_BASE_URL: 'http://localhost:9005',
         API_AUTH_PATHNAME: '/examples/auth/passport/basicstrategy',
         URL_AFTER_SUCCESSFUL_LOGIN: '/examples-spa/login/page1',
-        URL_AFTER_LOGOUT: '/examples-spa/login/pageform'
+        URL_AFTER_LOGOUT: '/examples-spa/login/form'
     });
 </script>
 */
