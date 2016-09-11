@@ -1,10 +1,10 @@
 /**
- * Controller: 'NgPassportBasicCtrl'
+ * Controller: 'NgPassportJWTCtrl'
  */
 
-module.exports = function ($scope, basicAuth, $state) {
+module.exports = function ($scope, jwtAuth, $state, NGPASSPORT_CONF_JWT) {
     'use strict';
-    $scope.strategyName = 'Basic';
+    $scope.strategyName = 'JWT';
 
     //show current state object
     // console.info('Current state \n', JSON.stringify($state.get($state.current.name), null, 2));
@@ -14,14 +14,14 @@ module.exports = function ($scope, basicAuth, $state) {
     $scope.login = function () {
         $scope.errMsg = '';
 
-        basicAuth
+        jwtAuth
             .login($scope.username, $scope.password)
             .catch(function (err) {
                 if (err.data) {
                     $scope.errMsg = err.data.message;
                     console.error(err.data.stack);
                 } else {
-                    $scope.errMsg = 'Bad API request: ' + NGPASSPORT_CONF_BASIC.API_BASE_URL + NGPASSPORT_CONF_BASIC.URL_AFTER_SUCCESSFUL_LOGIN;
+                    $scope.errMsg = 'Bad API request: ' + NGPASSPORT_CONF_JWT.API_BASE_URL + NGPASSPORT_CONF_JWT.URL_AFTER_SUCCESSFUL_LOGIN;
                 }
 
             });
@@ -30,6 +30,6 @@ module.exports = function ($scope, basicAuth, $state) {
 
     //when logout button is clicked
     $scope.logout = function () {
-        basicAuth.logout();
+        jwtAuth.logout();
     };
 };

@@ -5,10 +5,16 @@
  ******************************************************************/
 var ngPassportBasic = angular.module('ngPassport.basicStrategy', []);
 
+ngPassportBasic.controller('NgPassportBasicCtrl', require('./controller/ngPassportBasicCtrl'));
+
+ngPassportBasic.factory('basicAuth', require('./factory/basicAuth'));
+ngPassportBasic.factory('base64', require('./factory/base64'));
+ngPassportBasic.factory('basicInterceptApiRequest', require('./factory/basicInterceptApiRequest'));
+
 //protect API endpoints
 ngPassportBasic.config(function ($httpProvider) {
     'use strict';
-    $httpProvider.interceptors.push('interceptApiRequest');
+    $httpProvider.interceptors.push('basicInterceptApiRequest');
 });
 
 //protect pages e.g. ui-router's states
@@ -17,6 +23,12 @@ ngPassportBasic.run(function ($rootScope, basicAuth) {
     $rootScope.$on('$stateChangeSuccess', basicAuth.protectUIRouterState);
 });
 
+
+
+/* login form and logout button directives */
+ngPassportBasic.directive('ngpassportForm', require('./directive/ngpassportForm')('NgPassportBasicCtrl'));
+ngPassportBasic.directive('ngpassportLogout', require('./directive/ngpassportLogout')('NgPassportBasicCtrl'));
+
 //define default templates
 ngPassportBasic.run(function ($templateCache) {
     'use strict';
@@ -24,14 +36,7 @@ ngPassportBasic.run(function ($templateCache) {
     $templateCache.put('logoutSimple.html', '<button ng-click="logout()">Logout</button>');
 });
 
-ngPassportBasic.controller('NgPassportBasicCtrl', require('./controller/ngPassportBasicCtrl'));
 
-ngPassportBasic.factory('basicAuth', require('./factory/basicAuth'));
-ngPassportBasic.factory('base64', require('./factory/base64'));
-ngPassportBasic.factory('interceptApiRequest', require('./factory/interceptApiRequest'));
-
-ngPassportBasic.directive('ngpassportForm', require('./directive/ngpassportForm')('NgPassportBasicCtrl'));
-ngPassportBasic.directive('ngpassportLogout', require('./directive/ngpassportLogout')('NgPassportBasicCtrl'));
 
 
 

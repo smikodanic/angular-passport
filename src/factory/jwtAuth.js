@@ -1,12 +1,12 @@
 /**
- * Services for Basic Authentication
+ * Services for JWT Authentication
  * Notice: $cookies require 'ngCookies' module to be included
  */
 
-module.exports = function ($http, NGPASSPORT_CONF_BASIC, base64, $cookies, $location, $state, $timeout) {
+module.exports = function ($http, NGPASSPORT_CONF_JWT, $cookies, $location, $state, $timeout) {
     'use strict';
 
-    var basicAuth = {};
+    var jwtAuth = {};
 
     /**
      * Check credentials (username, password) and set cookie if credentails are correct.
@@ -14,31 +14,24 @@ module.exports = function ($http, NGPASSPORT_CONF_BASIC, base64, $cookies, $loca
      * @param  {String} p -password
      * @return {Object}   - Q promise
      */
-    basicAuth.login = function (u, p) {
-
-        //encoding
-        var input = u + ':' + p;
-        var input64 = base64.encode(input);
-
-        //$http config
-        var http_config = {
-            headers: {
-                Authorization: 'Basic ' + input64
-            }
-        };
-        // console.log(JSON.stringify(http_config, null, 2));
+    jwtAuth.login = function (u, p) {
 
         //delete cookie (on bad login old cookie will be deleted)
-        basicAuth.delCookie('authAPI');
+        jwtAuth.delCookie('authAPI');
 
-        return $http.get(NGPASSPORT_CONF_BASIC.API_BASE_URL + NGPASSPORT_CONF_BASIC.API_AUTH_PATHNAME, http_config)
+        //check credentials
+        var postObj = {
+            username: u,
+            password: p
+        };
+        return $http.post(NGPASSPORT_CONF_JWT.API_BASE_URL + NGPASSPORT_CONF_JWT.API_AUTH_PATHNAME, postObj)
             .then(function (respons) {
                 if (respons.data.isLoggedIn) {
-                    basicAuth.setCookie('authAPI', respons.data.putLocally);
-
-                    //redirect to another page
-                    if (NGPASSPORT_CONF_BASIC.URL_AFTER_SUCCESSFUL_LOGIN) {
-                        $location.path(NGPASSPORT_CONF_BASIC.URL_AFTER_SUCCESSFUL_LOGIN);
+                    jwtAuth.setCookie('authAPI', respons.data.putLocally);
+                    console.log(NGPASSPORT_CONF_JWT.URL_AFTER_SUCCESSFUL_LOGIN);
+                    //redirect to another page after successful login
+                    if (NGPASSPORT_CONF_JWT.URL_AFTER_SUCCESSFUL_LOGIN) {
+                        $location.path(NGPASSPORT_CONF_JWT.URL_AFTER_SUCCESSFUL_LOGIN);
                     }
                 }
             });
@@ -51,11 +44,11 @@ module.exports = function ($http, NGPASSPORT_CONF_BASIC, base64, $cookies, $loca
      * Use it in controller when user clicks on logout button.
      * @return {Boolean} - returns true or false
      */
-    basicAuth.logout = function () {
-        basicAuth.delCookie('authAPI');
+    jwtAuth.logout = function () {
+        jwtAuth.delCookie('authAPI');
 
         $timeout(function () {
-            $location.path(NGPASSPORT_CONF_BASIC.URL_AFTER_LOGOUT);
+            $location.path(NGPASSPORT_CONF_JWT.URL_AFTER_LOGOUT);
         }, 34);
     };
 
@@ -63,9 +56,9 @@ module.exports = function ($http, NGPASSPORT_CONF_BASIC, base64, $cookies, $loca
     /**
      * Set 'obj' inside cookie.
      * @param {String} cookieKey - 'authAPI'
-     * @param {Object} obj       - {"username": "john", "authHeader": "Basic am9objp0ZXN0"}
+     * @param {Object} obj       - {"username": "john", "authHeader": "JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU3YTcyNjk1MzcwYmM1MDk2MmUzNDVmZSIsImlhdCI6MTQ3MDU3MjI0NH0.RsiMnjrOjUjmLVC9rcU8Vu3B2h_yfXlBUI5SyBhveek"}
      */
-    basicAuth.setCookie = function (cookieKey, obj) {
+    jwtAuth.setCookie = function (cookieKey, obj) {
         $cookies.putObject(cookieKey, obj);
     };
 
@@ -73,9 +66,9 @@ module.exports = function ($http, NGPASSPORT_CONF_BASIC, base64, $cookies, $loca
     /**
      * Return object from cookie.
      * @param {String} cookieKey - 'authAPI'
-     * @return {Object}          - {"username": "john", "authHeader": "Basic am9objp0ZXN0"} || {"username": "", "authHeader": ""}
+     * @return {Object}          - {"username": "john", "authHeader": "JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU3YTcyNjk1MzcwYmM1MDk2MmUzNDVmZSIsImlhdCI6MTQ3MDU3MjI0NH0.RsiMnjrOjUjmLVC9rcU8Vu3B2h_yfXlBUI5SyBhveek"} || {"username": "", "authHeader": ""}
      */
-    basicAuth.getCookie = function (cookieKey) {
+    jwtAuth.getCookie = function (cookieKey) {
         var cookieObj = $cookies.getObject(cookieKey);
 
         if (cookieObj) {
@@ -93,18 +86,18 @@ module.exports = function ($http, NGPASSPORT_CONF_BASIC, base64, $cookies, $loca
      * Delete cookie, usually on logout.
      * @param {String} cookieKey - 'authAPI'
      */
-    basicAuth.delCookie = function (cookieKey) {
+    jwtAuth.delCookie = function (cookieKey) {
         $cookies.remove(cookieKey);
     };
 
 
     /**
      * Protect UI-router's state from unauthorized access.
-     * Implement inside main.js run() method --> $rootScope.$on('$stateChangeSuccess', basicAuth.onstateChangeSuccess);
+     * Implement inside main.js run() method --> $rootScope.$on('$stateChangeSuccess', jwtAuth.onstateChangeSuccess);
      * @param  {String} redirectUrl -url after successful login
      * @return {Boolean} - returns true or false
      */
-    basicAuth.protectUIRouterState = function (event, toState, toParams, fromState, fromParams) {
+    jwtAuth.protectUIRouterState = function (event, toState, toParams, fromState, fromParams) {
         event.preventDefault();
 
         // console.log('authRequired: ', JSON.stringify($state.current.authRequired, null, 2));
@@ -114,8 +107,8 @@ module.exports = function ($http, NGPASSPORT_CONF_BASIC, base64, $cookies, $loca
         if ($state.current.authRequired) {
 
             //redirect if 'authAPI' cookie doesn't exists
-            if (!basicAuth.isAuthenticated()) {
-                basicAuth.logout(NGPASSPORT_CONF_BASIC.URL_AFTER_LOGOUT);
+            if (!jwtAuth.isAuthenticated()) {
+                jwtAuth.logout(NGPASSPORT_CONF_JWT.URL_AFTER_LOGOUT);
             }
 
         }
@@ -127,9 +120,9 @@ module.exports = function ($http, NGPASSPORT_CONF_BASIC, base64, $cookies, $loca
      * Authenticated is when cookie 'authAPI' exists.
      * @return {Boolean} - returns true or false
      */
-    basicAuth.isAuthenticated = function () {
-        if (basicAuth.getCookie('authAPI')) {
-            return !!basicAuth.getCookie('authAPI').username;
+    jwtAuth.isAuthenticated = function () {
+        if (jwtAuth.getCookie('authAPI')) {
+            return !!jwtAuth.getCookie('authAPI').username;
         } else {
             return false;
         }
@@ -137,6 +130,6 @@ module.exports = function ($http, NGPASSPORT_CONF_BASIC, base64, $cookies, $loca
 
 
 
-    return basicAuth;
+    return jwtAuth;
 
 };

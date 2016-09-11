@@ -1,8 +1,5 @@
 /**
  * API Request interceptor
- *
- * clientApp.factory('interceptApiRequest', require('./lib/factory/interceptApiRequest'));
- *
  * Notice: $injector is required to inject basicAuth, because config() accepts providers only not services.
  */
 
