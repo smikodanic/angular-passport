@@ -9,7 +9,7 @@ module.exports = function (ctrl) {
             controller: ctrl,
             scope: {templateUrl: '='},
             templateUrl: function (tElement, tAttrs) {
-                return tAttrs.templateUrl || 'formSimple.html'; //used <ngpassport-form template-url="formSimple.html"></ngpassport-form>
+                return tAttrs.templateUrl || 'formSimple.html'; //used <ngpassport-form template-url="myTemplate.html"></ngpassport-form>
             }
         };
 

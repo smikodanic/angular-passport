@@ -9,7 +9,7 @@
  * Controller: 'NgPassportBasicCtrl'
  */
 
-module.exports = function ($scope, basicAuth, $state) {
+module.exports = function ($scope, basicAuth, $state, NGPASSPORT_CONF_BASIC) {
     'use strict';
     $scope.strategyName = 'Basic';
 
@@ -26,9 +26,9 @@ module.exports = function ($scope, basicAuth, $state) {
             .catch(function (err) {
                 if (err.data) {
                     $scope.errMsg = err.data.message;
-                    console.error(err.data.stack);
+                    console.error('loginERR', err.data.stack);
                 } else {
-                    $scope.errMsg = 'Bad API request: ' + NGPASSPORT_CONF_BASIC.API_BASE_URL + NGPASSPORT_CONF_BASIC.URL_AFTER_SUCCESSFUL_LOGIN;
+                    $scope.errMsg = 'API Error (404): ' + NGPASSPORT_CONF_BASIC.API_BASE_URL + NGPASSPORT_CONF_BASIC.URL_AFTER_SUCCESSFUL_LOGIN;
                 }
 
             });
@@ -65,7 +65,7 @@ module.exports = function ($scope, jwtAuth, $state, NGPASSPORT_CONF_JWT) {
                     $scope.errMsg = err.data.message;
                     console.error(err.data.stack);
                 } else {
-                    $scope.errMsg = 'Bad API request: ' + NGPASSPORT_CONF_JWT.API_BASE_URL + NGPASSPORT_CONF_JWT.URL_AFTER_SUCCESSFUL_LOGIN;
+                    $scope.errMsg = 'API Error (404): ' + NGPASSPORT_CONF_JWT.API_BASE_URL + NGPASSPORT_CONF_JWT.URL_AFTER_SUCCESSFUL_LOGIN;
                 }
 
             });
@@ -90,7 +90,7 @@ module.exports = function (ctrl) {
             controller: ctrl,
             scope: {templateUrl: '='},
             templateUrl: function (tElement, tAttrs) {
-                return tAttrs.templateUrl || 'formSimple.html'; //used <ngpassport-form template-url="formSimple.html"></ngpassport-form>
+                return tAttrs.templateUrl || 'formSimple.html'; //used <ngpassport-form template-url="myTemplate.html"></ngpassport-form>
             }
         };
 
