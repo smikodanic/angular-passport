@@ -28,7 +28,7 @@ module.exports = function ($scope, basicAuth, $state, NGPASSPORT_CONF_BASIC) {
                     $scope.errMsg = err.data.message;
                     console.error('loginERR', err.data.stack);
                 } else {
-                    $scope.errMsg = 'API Error (404): ' + NGPASSPORT_CONF_BASIC.API_BASE_URL + NGPASSPORT_CONF_BASIC.API_AUTH_PATHNAME;
+                    $scope.errMsg = '500 Internal API Server Error: ' + NGPASSPORT_CONF_BASIC.API_BASE_URL + NGPASSPORT_CONF_BASIC.API_AUTH_PATHNAME;
                 }
 
             });
@@ -65,7 +65,7 @@ module.exports = function ($scope, jwtAuth, $state, NGPASSPORT_CONF_JWT) {
                     $scope.errMsg = err.data.message;
                     console.error(err.data.stack);
                 } else {
-                    $scope.errMsg = 'API Error (404): ' + NGPASSPORT_CONF_JWT.API_BASE_URL + NGPASSPORT_CONF_JWT.API_AUTH_PATHNAME;
+                    $scope.errMsg = '500 Internal API Server Error: ' + NGPASSPORT_CONF_JWT.API_BASE_URL + NGPASSPORT_CONF_JWT.API_AUTH_PATHNAME;
                 }
 
             });
