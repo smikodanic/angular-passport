@@ -25,8 +25,8 @@ ngPassportHash.run(function ($rootScope, hashAuth) {
 
 
 /* login form and logout button directives */
-ngPassportHash.directive('ngpassportForm', require('./directive/ngpassportForm')('ngPassportHashCtrl'));
-ngPassportHash.directive('ngpassportLogout', require('./directive/ngpassportLogout')('ngPassportHashCtrl'));
+ngPassportHash.directive('ngpassportForm', require('./directive/ngpassportForm')('NgPassportHashCtrl'));
+ngPassportHash.directive('ngpassportLogout', require('./directive/ngpassportLogout')('NgPassportHashCtrl'));
 
 //define default templates
 ngPassportHash.run(function ($templateCache) {
