@@ -1,6 +1,6 @@
 /**
  * API Request interceptor
- * Notice: $injector is required to inject basicAuth, because config() accepts providers only not services.
+ * Notice: $injector is required to inject jwtAuth, because config() accepts providers only not services.
  */
 
 module.exports = function ($injector) {

@@ -51,11 +51,11 @@ module.exports = ngPassportBasic;
 /*when included in html file
 <script src=".../dist/js/ngPassport.js"></script>
 <script>
-    ngPassportBasic.constant('NGPASSPORT_CONF', {
+    ngPassportBasic.constant('NGPASSPORT_CONF_BASIC', {
         API_BASE_URL: 'http://localhost:9005',
         API_AUTH_PATHNAME: '/examples/auth/passport/basicstrategy',
-        URL_AFTER_SUCCESSFUL_LOGIN: '/examples-spa/login/page1',
-        URL_AFTER_LOGOUT: '/examples-spa/login/form'
+        URL_AFTER_SUCCESSFUL_LOGIN: '/examples-spa/login/basic/page1',
+        URL_AFTER_LOGOUT: '/examples-spa/login/basic/form'
     });
 </script>
 */

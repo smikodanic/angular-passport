@@ -16,7 +16,6 @@ module.exports = function ($scope, basicAuth, $state, NGPASSPORT_CONF_BASIC) {
     //show current state object
     // console.info('Current state \n', JSON.stringify($state.get($state.current.name), null, 2));
 
-    /******** BASIC AUTHENTICATION ********/
     //when login button is clicked
     $scope.login = function () {
         $scope.errMsg = '';
@@ -43,6 +42,42 @@ module.exports = function ($scope, basicAuth, $state, NGPASSPORT_CONF_BASIC) {
 
 },{}],2:[function(require,module,exports){
 /**
+ * Controller: 'NgPassportHashCtrl'
+ */
+
+module.exports = function ($scope, hashAuth, $state, NGPASSPORT_CONF_HASH) {
+    'use strict';
+    $scope.strategyName = 'Hash';
+
+    //show current state object
+    // console.info('Current state \n', JSON.stringify($state.get($state.current.name), null, 2));
+
+    //when login button is clicked
+    $scope.login = function () {
+        $scope.errMsg = '';
+
+        hashAuth
+            .login($scope.username, $scope.password)
+            .catch(function (err) {
+                if (err.data) {
+                    $scope.errMsg = err.data.message;
+                    console.error(err.data.stack);
+                } else {
+                    $scope.errMsg = '500 Internal API Server Error: ' + NGPASSPORT_CONF_HASH.API_BASE_URL + NGPASSPORT_CONF_HASH.API_AUTH_PATHNAME;
+                }
+
+            });
+
+    };
+
+    //when logout button is clicked
+    $scope.logout = function () {
+        hashAuth.logout();
+    };
+};
+
+},{}],3:[function(require,module,exports){
+/**
  * Controller: 'NgPassportJWTCtrl'
  */
 
@@ -53,7 +88,6 @@ module.exports = function ($scope, jwtAuth, $state, NGPASSPORT_CONF_JWT) {
     //show current state object
     // console.info('Current state \n', JSON.stringify($state.get($state.current.name), null, 2));
 
-    /******** BASIC AUTHENTICATION ********/
     //when login button is clicked
     $scope.login = function () {
         $scope.errMsg = '';
@@ -78,7 +112,7 @@ module.exports = function ($scope, jwtAuth, $state, NGPASSPORT_CONF_JWT) {
     };
 };
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 module.exports = function (ctrl) {
     'use strict';
 
@@ -98,7 +132,7 @@ module.exports = function (ctrl) {
     };
 };
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 module.exports = function (ctrl) {
     'use strict';
 
@@ -118,7 +152,7 @@ module.exports = function (ctrl) {
     };
 };
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 module.exports = function () {
     'use strict';
 
@@ -204,7 +238,7 @@ module.exports = function () {
 
 };
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /**
  * Services for Basic Authentication
  * Notice: $cookies require 'ngCookies' module to be included
@@ -348,7 +382,7 @@ module.exports = function ($http, NGPASSPORT_CONF_BASIC, base64, $cookies, $loca
 
 };
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /**
  * API Request interceptor
  * Notice: $injector is required to inject basicAuth, because config() accepts providers only not services.
@@ -401,7 +435,183 @@ module.exports = function ($injector) {
 
 };
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
+/**
+ * Services for Hash Authentication
+ * Notice: $cookies require 'ngCookies' module to be included
+ */
+
+module.exports = function ($http, NGPASSPORT_CONF_HASH, $cookies, $location, $state, $timeout) {
+    'use strict';
+
+    var hashAuth = {};
+
+    /**
+     * Check credentials (username, password) and set cookie if credentails are correct.
+     * @param  {String} u - username
+     * @param  {String} p -password
+     * @return {Object}   - Q promise
+     */
+    hashAuth.login = function (u, p) {
+
+        //delete cookie (on bad login old cookie will be deleted)
+        hashAuth.delCookie('authAPI');
+
+        //check credentials
+        var postObj = {
+            username: u,
+            password: p
+        };
+        return $http.post(NGPASSPORT_CONF_HASH.API_BASE_URL + NGPASSPORT_CONF_HASH.API_AUTH_PATHNAME, postObj)
+            .then(function (respons) {
+                if (respons.data.isLoggedIn) {
+                    hashAuth.setCookie('authAPI', respons.data.putLocally);
+                    // console.log(NGPASSPORT_CONF_HASH.URL_AFTER_SUCCESSFUL_LOGIN);
+                    //redirect to another page after successful login
+                    if (NGPASSPORT_CONF_HASH.URL_AFTER_SUCCESSFUL_LOGIN) {
+                        $location.path(NGPASSPORT_CONF_HASH.URL_AFTER_SUCCESSFUL_LOGIN);
+                    }
+                }
+            });
+
+    };
+
+
+    /**
+     * Logout and redirect to another page.
+     * Use it in controller when user clicks on logout button.
+     * @return {Boolean} - returns true or false
+     */
+    hashAuth.logout = function () {
+        hashAuth.delCookie('authAPI');
+
+        $timeout(function () {
+            $location.path(NGPASSPORT_CONF_HASH.URL_AFTER_LOGOUT);
+        }, 34);
+    };
+
+
+    /**
+     * Set 'obj' inside cookie.
+     * @param {String} cookieKey - 'authAPI'
+     * @param {Object} obj       - {"username": "john", "hash": "e7b1951a91718085f4382391c31ef175df72addddb"}
+     */
+    hashAuth.setCookie = function (cookieKey, obj) {
+        $cookies.putObject(cookieKey, obj);
+    };
+
+
+    /**
+     * Return object from cookie.
+     * @param {String} cookieKey - 'authAPI'
+     * @return {Object}          - {"username": "john", "hash": "e7b1951a91718085f4382391c31ef175df72addddb"} || {"username": "", "hash": ""}
+     */
+    hashAuth.getCookie = function (cookieKey) {
+        var cookieObj = $cookies.getObject(cookieKey);
+
+        if (cookieObj) {
+            return cookieObj;
+        } else {
+            return {
+                username: '',
+                hash: ''
+            };
+        }
+    };
+
+
+    /**
+     * Delete cookie, usually on logout.
+     * @param {String} cookieKey - 'authAPI'
+     */
+    hashAuth.delCookie = function (cookieKey) {
+        $cookies.remove(cookieKey);
+    };
+
+
+    /**
+     * Protect UI-router's state from unauthorized access.
+     * Implement inside main.js run() method --> $rootScope.$on('$stateChangeSuccess', hashAuth.onstateChangeSuccess);
+     * @param  {String} redirectUrl -url after successful login
+     * @return {Boolean} - returns true or false
+     */
+    hashAuth.protectUIRouterState = function (event, toState, toParams, fromState, fromParams) {
+        event.preventDefault();
+
+        // console.log('authRequired: ', JSON.stringify($state.current.authRequired, null, 2));
+
+        //check authentication if it's defined inside state with     authRequired: true
+        //see '/routes-ui/examples-spa_login.js'
+        if ($state.current.authRequired) {
+
+            //redirect if 'authAPI' cookie doesn't exists
+            if (!hashAuth.isAuthenticated()) {
+                hashAuth.logout(NGPASSPORT_CONF_HASH.URL_AFTER_LOGOUT);
+            }
+
+        }
+    };
+
+
+    /**
+     * Determine if app is authenticated or not. E.g. if user is logged in or not.
+     * Authenticated is when cookie 'authAPI' exists.
+     * @return {Boolean} - returns true or false
+     */
+    hashAuth.isAuthenticated = function () {
+        if (hashAuth.getCookie('authAPI')) {
+            return !!hashAuth.getCookie('authAPI').username;
+        } else {
+            return false;
+        }
+    };
+
+
+
+    return hashAuth;
+
+};
+
+},{}],10:[function(require,module,exports){
+/**
+ * API Request interceptor
+ * Notice: $injector is required to inject hashAuth, because config() accepts providers only not services.
+ */
+
+module.exports = function ($injector) {
+    'use strict';
+
+    var interceptApiRequest = {};
+
+    /**
+     * REQUEST INTERCEPTOR
+     *
+     * @param  {Object} config    - $http config parameter
+     *     *** $http.get('/someUrl', config).then(successCallback, errorCallback);
+     *     *** $http.post('/someUrl', data, config).then(successCallback, errorCallback);
+     */
+    interceptApiRequest.request = function (config) {
+        var hashAuth = $injector.get('hashAuth'); //get hashAuth factory
+
+        //Intercept by adding hash string at the URL's end, only when cookie is set, e.g. when user is logged in.
+        //When user is not logged in don't add hash sufix at the URL's end.
+        var hashStr = hashAuth.getCookie('authAPI').hash;
+        console.log('hashStr ', hashStr);
+        if (hashStr) {
+            config.url = config.url + '/' + hashStr;
+        }
+
+        console.log('$http config\n', JSON.stringify(config, null, 2));
+
+        return config;
+    };
+
+
+    return interceptApiRequest;
+
+};
+
+},{}],11:[function(require,module,exports){
 /**
  * Services for JWT Authentication
  * Notice: $cookies require 'ngCookies' module to be included
@@ -538,10 +748,10 @@ module.exports = function ($http, NGPASSPORT_CONF_JWT, $cookies, $location, $sta
 
 };
 
-},{}],9:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /**
  * API Request interceptor
- * Notice: $injector is required to inject basicAuth, because config() accepts providers only not services.
+ * Notice: $injector is required to inject jwtAuth, because config() accepts providers only not services.
  */
 
 module.exports = function ($injector) {
@@ -575,13 +785,14 @@ module.exports = function ($injector) {
 
 };
 
-},{}],10:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 module.exports.ngPassportBasic = require('./ngPassportBasic');
 module.exports.ngPassportJWT = require('./ngPassportJWT');
+module.exports.ngPassportHash = require('./ngPassportHash');
 
 
 
-},{"./ngPassportBasic":11,"./ngPassportJWT":12}],11:[function(require,module,exports){
+},{"./ngPassportBasic":14,"./ngPassportHash":15,"./ngPassportJWT":16}],14:[function(require,module,exports){
 /*global angular, window*/
 
 /***************************** BASIC AUTHETICATION ****************
@@ -635,17 +846,80 @@ module.exports = ngPassportBasic;
 /*when included in html file
 <script src=".../dist/js/ngPassport.js"></script>
 <script>
-    ngPassportBasic.constant('NGPASSPORT_CONF', {
+    ngPassportBasic.constant('NGPASSPORT_CONF_BASIC', {
         API_BASE_URL: 'http://localhost:9005',
         API_AUTH_PATHNAME: '/examples/auth/passport/basicstrategy',
-        URL_AFTER_SUCCESSFUL_LOGIN: '/examples-spa/login/page1',
-        URL_AFTER_LOGOUT: '/examples-spa/login/form'
+        URL_AFTER_SUCCESSFUL_LOGIN: '/examples-spa/login/basic/page1',
+        URL_AFTER_LOGOUT: '/examples-spa/login/basic/form'
     });
 </script>
 */
 window.ngPassportBasic = ngPassportBasic;
 
-},{"./controller/ngPassportBasicCtrl":1,"./directive/ngpassportForm":3,"./directive/ngpassportLogout":4,"./factory/base64":5,"./factory/basicAuth":6,"./factory/basicInterceptApiRequest":7}],12:[function(require,module,exports){
+},{"./controller/ngPassportBasicCtrl":1,"./directive/ngpassportForm":4,"./directive/ngpassportLogout":5,"./factory/base64":6,"./factory/basicAuth":7,"./factory/basicInterceptApiRequest":8}],15:[function(require,module,exports){
+/*global angular, window*/
+
+/***************************** HASH AUTHETICATION ****************
+ https://github.com/yuri-karadzhov/passport-hash
+ ******************************************************************/
+var ngPassportHash = angular.module('ngPassport.hashStrategy', []);
+
+ngPassportHash.controller('NgPassportHashCtrl', require('./controller/ngPassportHashCtrl'));
+
+ngPassportHash.factory('hashAuth', require('./factory/hashAuth'));
+ngPassportHash.factory('hashInterceptApiRequest', require('./factory/hashInterceptApiRequest'));
+
+//protect API endpoints
+ngPassportHash.config(function ($httpProvider) {
+    'use strict';
+    $httpProvider.interceptors.push('hashInterceptApiRequest');
+});
+
+//protect pages e.g. ui-router's states
+ngPassportHash.run(function ($rootScope, hashAuth) {
+    'use strict';
+    $rootScope.$on('$stateChangeSuccess', hashAuth.protectUIRouterState);
+});
+
+
+
+/* login form and logout button directives */
+ngPassportHash.directive('ngpassportForm', require('./directive/ngpassportForm')('ngPassportHashCtrl'));
+ngPassportHash.directive('ngpassportLogout', require('./directive/ngpassportLogout')('ngPassportHashCtrl'));
+
+//define default templates
+ngPassportHash.run(function ($templateCache) {
+    'use strict';
+    $templateCache.put('formSimple.html', '<div><form> username: <input type="text" ng-model="username"> <br>password: <input type="password" ng-model="password"> <button type="button" ng-click="login()">Login</button></form>{{errMsg}}</div>');
+    $templateCache.put('logoutSimple.html', '<button ng-click="logout()">Logout</button>');
+});
+
+
+
+
+
+
+/*when used in browserify (require('angular-passport')) */
+module.exports = ngPassportHash;
+
+
+
+
+
+/*when included in html file
+<script src=".../dist/js/ngPassport.js"></script>
+<script>
+    ngPassportHash.constant('NGPASSPORT_CONF_HASH', {
+        API_BASE_URL: 'http://localhost:9005',
+        API_AUTH_PATHNAME: '/examples/auth/passport/hashstrategy-gethash',
+        URL_AFTER_SUCCESSFUL_LOGIN: '/examples-spa/login/hash/page1',
+        URL_AFTER_LOGOUT: '/examples-spa/login/hash/form'
+    });
+</script>
+*/
+window.ngPassportHash = ngPassportHash;
+
+},{"./controller/ngPassportHashCtrl":2,"./directive/ngpassportForm":4,"./directive/ngpassportLogout":5,"./factory/hashAuth":9,"./factory/hashInterceptApiRequest":10}],16:[function(require,module,exports){
 /*global angular, window*/
 
 /***************************** JWT (Json Web Token) AUTHETICATION ****************
@@ -698,14 +972,14 @@ module.exports = ngPassportJWT;
 /*when included in html file
 <script src=".../dist/js/ngPassport.js"></script>
 <script>
-    ngPassportJWT.constant('NGPASSPORT_CONF', {
+    ngPassportJWT.constant('NGPASSPORT_CONF_JWT', {
         API_BASE_URL: 'http://localhost:9005',
         API_AUTH_PATHNAME: '/examples/auth/passport/jwtstrategy-gettoken',
-        URL_AFTER_SUCCESSFUL_LOGIN: '/examples-spa/login/page1',
-        URL_AFTER_LOGOUT: '/examples-spa/login/form'
+        URL_AFTER_SUCCESSFUL_LOGIN: '/examples-spa/login/jwt/page1',
+        URL_AFTER_LOGOUT: '/examples-spa/login/jwt/form'
     });
 </script>
 */
 window.ngPassportJWT = ngPassportJWT;
 
-},{"./controller/ngPassportJWTCtrl":2,"./directive/ngpassportForm":3,"./directive/ngpassportLogout":4,"./factory/jwtAuth":8,"./factory/jwtInterceptApiRequest":9}]},{},[10]);
+},{"./controller/ngPassportJWTCtrl":3,"./directive/ngpassportForm":4,"./directive/ngpassportLogout":5,"./factory/jwtAuth":11,"./factory/jwtInterceptApiRequest":12}]},{},[13]);

@@ -9,7 +9,6 @@ module.exports = function ($scope, jwtAuth, $state, NGPASSPORT_CONF_JWT) {
     //show current state object
     // console.info('Current state \n', JSON.stringify($state.get($state.current.name), null, 2));
 
-    /******** BASIC AUTHENTICATION ********/
     //when login button is clicked
     $scope.login = function () {
         $scope.errMsg = '';
