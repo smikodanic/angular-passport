@@ -1,10 +1,11 @@
 # angular-passport
-> Angular module for PassportJS login and API auth. Strategies: Basic, JWT &amp; Hash
+> Angular module for PassportJS login and API auth. Strategies: **Basic, JWT, Hash**
 
 ## Installation
-npm install --save angular-passport
+`npm install angular-passport`
 
 ## Prerequisites
+Include these modules in your app because they are required for `angular-passport` to work properly:
 - ngCookies (<a href="https://docs.angularjs.org/api/ngCookies">https://docs.angularjs.org/api/ngCookies</a>)
 - ui.router (<a href="https://github.com/angular-ui/ui-router">https://github.com/angular-ui/ui-router</a>)
 
@@ -51,6 +52,100 @@ ngPassportBasic.constant('NGPASSPORT_CONF_BASIC', {
 
 ---
 
+## Directives
+There are 2 directives in `angular-passport` to generate:
+
+- **Login Form**
+
+	```html
+	<ngpassport-form></ngpassport-form>
+	```
+
+	```html
+	<ngpassport-form templateurl="myBootstrapForm.html"></ngpassport-form>
+
+	<!-- override default form template -->
+	<script type="text/ng-template" id="myBootstrapForm.html">
+
+	   <div>
+	   		<form action="#" method="POST" enctype="application/x-www-form-urlencoded" class="form-horizontal">
+
+				<div class="form-group">
+					<label for="username" class="col-sm-4 control-label">username:</label>
+					<div class="col-sm-4">
+						<input type="text" class="form-control" ng-init="username='john'" ng-model="username">
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="password" class="col-sm-4 control-label">password:</label>
+					<div class="col-sm-4">
+						<input type="text" class="form-control" ng-init="password='test'" ng-model="password">
+					</div>
+					<div class="col-sm-3">
+						<input type="button" value="Login Basic" class="btn btn-success" ng-click="login()">
+					</div>
+				</div>
+
+			</form>
+
+			<p class="alert alert-danger" ng-if="errMsg">{{errMsg}}</p>
+		</div>
+
+	</script>
+	```
+
+- **Logout Button**
+	```html
+	<ngpassport-logout>Logout</ngpassport-logout>
+	```
+
+	```html
+	<ngpassport-logout template-url="myBootstrapLogout.html">Logout</ngpassport-logout>
+
+	<!-- override default form template -->
+	<script type="text/ng-template" id="myBootstrapLogout.html">
+	   	<a href="#" style="border:1px solid Gray;font-size:21px;padding:5px;" ng-click="logout()"><span class="glyphicon glyphicon-log-out"></span></a>
+	</script>
+	```
+
+
+####Regular HTML
+*Notice that you can also use regular HTML tags instead of angular directives. For example:*
+```html
+<button class="btn btn-success" ng-controller="NgPassportBasicCtrl" ng-click="logout()">Logout</button>
+```
+
+or
+
+```html
+	<!-- form created by standard HTML tags -->
+	<form action="#" method="POST" enctype="application/x-www-form-urlencoded" class="form-horizontal" ng-controller="NgPassportBasicCtrl">
+
+		<div class="form-group">
+			<label for="username" class="col-sm-4 control-label">username:</label>
+			<div class="col-sm-4">
+				<input type="text" class="form-control" ng-init="username='john'" ng-model="username">
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="password" class="col-sm-4 control-label">password:</label>
+			<div class="col-sm-4">
+				<input type="text" class="form-control" ng-init="password='test'" ng-model="password">
+			</div>
+			<div class="col-sm-3">
+				<input type="button" value="Login Basic" class="btn btn-info" ng-click="login()">
+			</div>
+		</div>
+
+		<p class="alert alert-danger" ng-if="errMsg">{{errMsg}}</p>
+	</form>
+```
+
+
+
+---
 ---
 
 
