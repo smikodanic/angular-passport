@@ -143,7 +143,35 @@ or
 	</form>
 ```
 
+### Protect routes (states) and API endpoints
+All API endpoints are protected by default with $http interceptor, so each $http request is added with 'Authorization' header.
 
+Route protection is also very simple. Just add `authRequired: true` inside your state definition, and state will not be accessible if authentication failed.
+
+```javascript
+/* state: 'examples-spa_login_jwt_page1'
+ * url: /examples-spa/login/jwt/page1
+ ************************/
+module.exports = function (APPCONF) {
+    'use strict';
+
+    return {
+        url: '/examples-spa/login/jwt/page1',
+        views: {
+            '': {
+                templateUrl: APPCONF.PATH_DIST_HTML + '/examples-spa/login/jwt/page1/page1.html'
+            },
+            'topmenu@examples-spa_login_jwt_page1': {
+                templateUrl: APPCONF.PATH_DIST_HTML + '/examples-spa/login/jwt/_common/topmenu/topmenu.html',
+                controller: 'TopmenuJWTCtrl'
+            }
+        },
+
+        authRequired: true
+
+    };
+};
+```
 
 ---
 ---
