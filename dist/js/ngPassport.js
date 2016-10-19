@@ -1,5 +1,5 @@
 /*!
- *  v1.0.0 (https://github.com/smikodanic/angular-passport#readme)
+ *  v1.0.3 (https://github.com/smikodanic/angular-passport#readme)
  * Copyright 2014-2016 Sasa Mikodanic
  * Licensed under MIT (Freely you received, freely give. , Mt10:8) 
  */
