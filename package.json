@@ -1,6 +1,6 @@
 {
   "name": "angular-passport",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Angular module for PassportJS login and API auth. Strategies: Basic, JWT & Hash",
   "main": "src/main.js",
   "scripts": {
