@@ -28,7 +28,7 @@ module.exports = function ($http, NGPASSPORT_CONF_JWT, $cookies, $location, $sta
             .then(function (respons) {
                 if (respons.data.isLoggedIn) {
                     jwtAuth.setCookie('authAPI', respons.data.putLocally);
-                    console.log(NGPASSPORT_CONF_JWT.URL_AFTER_SUCCESSFUL_LOGIN);
+                    // console.log(NGPASSPORT_CONF_JWT.URL_AFTER_SUCCESSFUL_LOGIN);
                     //redirect to another page after successful login
                     if (NGPASSPORT_CONF_JWT.URL_AFTER_SUCCESSFUL_LOGIN) {
                         $location.path(NGPASSPORT_CONF_JWT.URL_AFTER_SUCCESSFUL_LOGIN);
